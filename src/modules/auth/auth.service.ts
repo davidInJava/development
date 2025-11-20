@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { User } from '../../database/entities/user.entity';
+import { User, UserRole } from '../../database/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { RegisterDto } from './dto/register.dto/register.dto';
 import { AuthResponseDto } from './dto/auth-response.dto/auth-response.dto';
@@ -26,6 +26,7 @@ export class AuthService {
     const existingUser = await this.userRepository.findOne({
       where: { email: registerDto.email },
     });
+
     if (existingUser) {
       throw new ConflictException('User with this email already exists');
     }
@@ -35,7 +36,9 @@ export class AuthService {
     const user = this.userRepository.create({
       ...registerDto,
       password: hashedPassword,
+      role: UserRole.CITIZEN
     });
+
     await this.userRepository.save(user);
 
     return this.generateTokens(user);
