@@ -1,11 +1,33 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
+import { AuthResponseDto } from './dto/auth-response.dto/auth-response.dto';
+import { RegisterDto } from './dto/register.dto/register.dto';
+import { LoginDto } from './dto/login.dto/login.dto';
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly AuthService: AuthService) {}
-
-  @Get()
-  getAllUser(): string[] {
-    return this.AuthService.getAllUsers();
+  constructor(private readonly authService: AuthService) {}
+  @Post('register')
+  @ApiOperation({ summary: 'Register a new user' })
+  @ApiResponse({
+    status: 201,
+    description: 'User successfully registered',
+    type: AuthResponseDto,
+  })
+  @ApiResponse({ status: 409, description: 'User already exists' })
+  async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
+    return this.authService.register(registerDto);
+  }
+  @Post('login')
+  @ApiOperation({ summary: 'Login user' })
+  @ApiResponse({
+    status: 200,
+    description: 'User successfully logged in',
+    type: AuthResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
+    return this.authService.login(loginDto);
   }
 }
