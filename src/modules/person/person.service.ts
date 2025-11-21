@@ -43,8 +43,11 @@ export class PersonService {
     const existingPerson = await this.personRepository.findOne({
       where: { psn },
     });
-    if (existingPerson) {
-      throw new ConflictException('PSN already exists');
+    const existingPersonEmail = await this.personRepository.findOne({
+      where: { email: createPersonDto.email },
+    });
+    if (existingPersonEmail || existingPerson) {
+      throw new ConflictException('Email or psn already exists');
     }
 
     let primaryAddress: Address | undefined;
