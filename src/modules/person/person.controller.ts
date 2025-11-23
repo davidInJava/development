@@ -17,11 +17,11 @@ import {
 } from '@nestjs/swagger';
 import { PersonService } from './person.service';
 
-
 import { UserRole } from '../../database/entities/user.entity';
 import { PersonResponseDto } from './dto/person-response.dto/person-response.dto';
 import { UpdatePersonDto } from './dto/update-person.dto/update-person.dto';
 import { CreatePersonDto } from './dto/create-person.dto/create-person.dto';
+import { ApproveChangeRequestDto } from './dto/approve-change-request.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -45,10 +45,12 @@ export class PersonController {
     type: PersonResponseDto,
   })
   async create(@Body() createPersonDto: CreatePersonDto) {
-    
     return this.personService.create(createPersonDto);
   }
-
+  @Put('approve-change-request')
+  async approveChangeRequest(@Body() dto: ApproveChangeRequestDto) {
+    return this.personService.approveChangeRequest(dto.psn, dto.is_approve);
+  }
   /**
    * CP02 - Update Person Data
    */
@@ -72,7 +74,11 @@ export class PersonController {
    */
   @Get(':psn')
   @ApiOperation({ summary: 'CP03 - Get person by PSN' })
-  @ApiResponse({ status: 200, description: 'Person found', type: PersonResponseDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Person found',
+    type: PersonResponseDto,
+  })
   @ApiResponse({ status: 404, description: 'Person not found' })
   async findByPSN(@Param('psn') psn: string) {
     return this.personService.findByPSN(psn);
@@ -112,6 +118,10 @@ export class PersonController {
   async findAll(@Query() filters: any) {
     return this.personService.findAll(filters);
   }
+
+  /**
+   * CP07 - Approve Change Request
+   */
 
   /**
    * CP06 - Get Statistics

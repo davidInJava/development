@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Person } from '../../database/entities/person.entity';
 import { Address } from '../../database/entities/address.entity';
+import { ChangeRequest, RequestStatus } from '../../database/entities/change-request.entity';
 import { CreatePersonDto } from './dto/create-person.dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto/update-person.dto';
 import { PSNGenerator } from 'src/utils/encryption.util';
@@ -22,6 +23,9 @@ export class PersonService {
 
     @InjectRepository(Address)
     private addressRepository: Repository<Address>,
+
+    @InjectRepository(ChangeRequest)
+    private changeRequestRepository: Repository<ChangeRequest>,
   ) {}
 
   /**
@@ -108,6 +112,8 @@ export class PersonService {
    * Получение данных о человеке по PSN
    */
   async findByPSN(psn: string): Promise<Person> {
+
+
     if (!PSNGenerator.validate(psn)) {
       throw new BadRequestException('Invalid PSN format');
     }
@@ -287,6 +293,41 @@ export class PersonService {
       byCitizenshipStatus,
       byCity,
     };
+  }
+
+  /**
+   * CP07 - Approve or Reject Change Request
+   * Одобрение или отклонение запроса на изменение данных человека
+   */
+  async approveChangeRequest(psn: string, is_approve: boolean): Promise<void> {
+    const changeRequest2 = await this.changeRequestRepository.findOne({
+      where: { personId: psn, status: RequestStatus.PENDING },
+    });
+
+    if (!changeRequest2) {
+      throw new NotFoundException(`Pending change request for PSN ${psn} not found`);
+    }
+
+    if (is_approve) {
+      const person = await this.findByPSN(changeRequest2.personId);
+
+      // Применить изменения
+      Object.keys(changeRequest2.requestedChanges).forEach((key) => {
+        (person as any)[key] = changeRequest2.requestedChanges[key];
+      });
+
+      await this.personRepository.save(person);
+
+      // Обновить статус запроса
+      changeRequest2.status = RequestStatus.APPROVED;
+      changeRequest2.processedAt = new Date();
+      await this.changeRequestRepository.save(changeRequest2);
+    } else {
+      // Отклонить запрос
+      changeRequest2.status = RequestStatus.REJECTED;
+      changeRequest2.processedAt = new Date();
+      await this.changeRequestRepository.save(changeRequest2);
+    }
   }
 
   /**

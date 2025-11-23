@@ -33,11 +33,13 @@ export class CitizenController {
 	@UseGuards(AuthGuard('jwt-person'))
 	@Post('change-request')
 	async createChangeRequest(@Req() req: any, @Body() dto: CreateChangeRequestDto) {
+        
 		const person: any = req.user;
 		if (!person || !person.psn) {
 			throw new BadRequestException('Invalid authenticated person');
 		}
 
-		return this.citizenService.createChangeRequest(person.psn, dto.edit, dto.complete);
+		// pass only JWT-authenticated person object and edit; service will extract PSN
+		return this.citizenService.createChangeRequest(person, dto.edit);
 	}
 }

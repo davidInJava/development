@@ -7,11 +7,13 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtPersonStrategy } from './strategies/jwt-person.strategy';
+import { RolesGuard } from '../../common/guards/roles/roles.guard';
 import { User } from '../../database/entities/user.entity';
 import { Person } from '../../database/entities/person.entity';
+import { ChangeRequest } from '../../database/entities/change-request.entity';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Person]),
+    TypeOrmModule.forFeature([User, Person, ChangeRequest]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -25,7 +27,7 @@ import { Person } from '../../database/entities/person.entity';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtPersonStrategy],
+  providers: [AuthService, JwtStrategy, JwtPersonStrategy, RolesGuard],
   exports: [AuthService, JwtStrategy, JwtPersonStrategy, PassportModule, JwtModule],
 })
 export class AuthModule {}

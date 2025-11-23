@@ -43,7 +43,12 @@ export class PSNGenerator {
   }
 
   static validate(psn: string): boolean {
+
+
+
+
     if (psn.length !== 10 || !/^\d{10}$/.test(psn)) {
+       console.log('tttt', psn)
       return false;
     }
 

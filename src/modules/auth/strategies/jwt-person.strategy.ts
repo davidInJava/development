@@ -21,10 +21,22 @@ export class JwtPersonStrategy extends PassportStrategy(Strategy, 'jwt-person') 
   }
 
   async validate(payload: any) {
-    const person = await this.personRepository.findOne({ where: { id: payload.sub } });
+    // payload.sub for citizen JWT should contain PSN
+    // Log payload for debugging (remove in production)
+    // eslint-disable-next-line no-console
+    console.log('jwt-person payload:', payload);
+    let person: any;
+    if (payload.psn) {
+      person = await this.personRepository.findOne({ where: { psn: payload.psn } });
+    } else if (payload.sub) {
+      // fallback: some tokens may have sub = id
+      person = await this.personRepository.findOne({ where: { id: payload.sub } });
+    }
+
     if (!person || !person.isActive) {
       throw new UnauthorizedException('Person not found or inactive');
     }
+
     return person;
   }
 }

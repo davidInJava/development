@@ -1,11 +1,5 @@
-import { IsObject, IsEnum, IsNotEmpty } from 'class-validator';
+import { IsObject, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-
-export enum CompleteState {
-  ACTIVATE = 'activate',
-  BLOCKED = 'blocked',
-  COMPLETE = 'complete',
-}
 
 export class CreateChangeRequestDto {
   @ApiProperty({
@@ -15,8 +9,4 @@ export class CreateChangeRequestDto {
   @IsObject()
   @IsNotEmpty()
   edit: Record<string, any>;
-
-  @ApiProperty({ enum: CompleteState })
-  @IsEnum(CompleteState)
-  complete: CompleteState;
 }

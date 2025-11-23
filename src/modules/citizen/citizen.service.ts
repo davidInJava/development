@@ -64,7 +64,7 @@ export class CitizenService {
 		}
 
 		const payload = {
-			sub: person.id,
+			sub: person.psn,
 			psn: person.psn,
 			email: person.email,
 			type: 'citizen',
@@ -101,16 +101,22 @@ export class CitizenService {
 	/**
 	 * Create a change request for the authenticated person
 	 */
-	async createChangeRequest(personId: string, edit: Record<string, any>, complete: string) {
-		// validate person existence
-		const person = await this.personRepository.findOne({ where: { id: personId } });
+	async createChangeRequest(personObj: any, edit: Record<string, any>) {
+		// extract psn from authenticated JWT (req.user)
+		const psn = personObj && (personObj.psn || personObj.sub || personObj.id);
+		if (!psn) {
+			throw new BadRequestException('PSN not available in authenticated token');
+		}
+
+		// validate person existence by PSN
+		const person = await this.personRepository.findOne({ where: { psn } });
 		if (!person) {
 			throw new NotFoundException('Person not found');
 		}
 
 		// check existing active (pending) request for this person
 		const existing = await this.changeRequestRepository.findOne({
-			where: { personId: person.id, status: RequestStatus.PENDING },
+			where: { personId: person.psn, status: RequestStatus.PENDING },
 		});
 		if (existing) {
 			throw new ConflictException('There is already an active change request for this person');
@@ -146,8 +152,8 @@ export class CitizenService {
 		const request = this.changeRequestRepository.create({
 			requestNumber: `CR-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
 			person,
-			personId: person.id,
-			submittedBy: person.id,
+			personId: person.psn,
+			submittedBy: person.psn,
 			requestType: RequestType.UPDATE_PERSONAL_INFO,
 			status: RequestStatus.PENDING,
 			requestedChanges: edit,
