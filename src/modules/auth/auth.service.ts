@@ -22,7 +22,28 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
+  async register(
+    registerDto: RegisterDto,
+    secretKey: string,
+  ): Promise<AuthResponseDto> {
+    const { role } = registerDto;
+
+    if (role === UserRole.ADMIN) {
+      const adminKey = this.configService.get<string>('SECRETKEYADMIN');
+      if (!secretKey || secretKey !== adminKey) {
+        throw new UnauthorizedException('Invalid secret key for ADMIN role');
+      }
+    }
+
+    if (role === UserRole.AGENCY_OPERATOR) {
+      const agencyKey = this.configService.get<string>('SECRETKEYAGENCY');
+      if (!secretKey || secretKey !== agencyKey) {
+        throw new UnauthorizedException(
+          'Invalid secret key for AGENCY_OPERATOR role',
+        );
+      }
+    }
+
     const existingUser = await this.userRepository.findOne({
       where: { email: registerDto.email },
     });
@@ -36,8 +57,21 @@ export class AuthService {
     const user = this.userRepository.create({
       ...registerDto,
       password: hashedPassword,
-      role: UserRole.CITIZEN
+      role: role || UserRole.CITIZEN,
     });
+
+    // === Генерация уникального PSN ===
+    let psn: string;
+
+    do {
+      psn = Math.floor(1000000000 + Math.random() * 9000000000).toString(); // 10 цифр
+    } while (
+      await this.userRepository.exist({
+        where: { psn },
+      })
+    );
+
+    user.psn = psn;
 
     await this.userRepository.save(user);
 

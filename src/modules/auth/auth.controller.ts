@@ -16,8 +16,11 @@ export class AuthController {
     type: AuthResponseDto,
   })
   @ApiResponse({ status: 409, description: 'User already exists' })
-  async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
-    return this.authService.register(registerDto);
+  async register(
+    @Body() registerDto: RegisterDto,
+    @Body('secretKey') secretKey: string,
+  ): Promise<AuthResponseDto> {
+    return this.authService.register(registerDto, secretKey);
   }
   @Post('login')
   @ApiOperation({ summary: 'Login user' })

@@ -66,7 +66,7 @@ export class Person {
   nationality: string;
 
   @Column({ nullable: true, type: 'text' })
-  photo: string; // Base64 или URL
+  photo: string; 
 
   // Contact Information
   @Column({ nullable: true })

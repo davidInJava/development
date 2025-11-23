@@ -6,6 +6,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getDatabaseConfig } from './config/database.config';
 import { PersonModule } from './modules/person/person.module';
+import { CitizenController } from './modules/citizen/citizen.controller';
+import { CitizenService } from './modules/citizen/citizen.service';
+import { CitizenModule } from './modules/citizen/citizen.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,8 +22,9 @@ import { PersonModule } from './modules/person/person.module';
     }),
     AuthModule,
     PersonModule,
+    CitizenModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, CitizenController],
+  providers: [AppService, CitizenService],
 })
 export class AppModule {}

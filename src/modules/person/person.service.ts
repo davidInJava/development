@@ -36,7 +36,7 @@ export class PersonService {
 
     const psn = PSNGenerator.generate(
       dateOfBirth,
-      createPersonDto.gender as 'MALE' | 'FEMALE',
+      createPersonDto.gender as 'MALE' | 'FEMALE' | 'OTHER',
       serialNumber,
     );
 
@@ -170,10 +170,7 @@ export class PersonService {
     return results;
   }
 
-  /**
-   * CP05 - Get Group of Persons
-   * Получение группы людей по критериям с пагинацией
-   */
+
   async findAll(filters: {
     citizenshipStatus?: string;
     gender?: string;

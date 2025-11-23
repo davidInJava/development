@@ -1,5 +1,5 @@
 export class PSNGenerator {
-  static generate(dateOfBirth: Date, gender: 'MALE' | 'FEMALE', serialNumber: number): string {
+  static generate(dateOfBirth: Date, gender: 'MALE' | 'FEMALE' | 'OTHER', serialNumber: number): string {
     const day = dateOfBirth.getDate();
     const month = dateOfBirth.getMonth() + 1;
     const year = dateOfBirth.getFullYear();

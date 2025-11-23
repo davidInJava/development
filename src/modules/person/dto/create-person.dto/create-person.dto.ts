@@ -32,9 +32,9 @@ export class CreatePersonDto {
   @IsOptional()
   placeOfBirth?: string;
 
-  @ApiProperty({ enum: [Gender.MALE, Gender.FEMALE] })
+  @ApiProperty({ enum: [Gender.MALE, Gender.FEMALE, Gender.OTHER] })
   @IsEnum(Gender)
-  gender: Gender.MALE | Gender.FEMALE;
+  gender: Gender.MALE | Gender.FEMALE | Gender.OTHER;
 
   @ApiProperty({ enum: CitizenshipStatus, example: CitizenshipStatus.CITIZEN })
   @IsEnum(CitizenshipStatus)

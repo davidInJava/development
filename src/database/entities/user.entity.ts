@@ -43,8 +43,8 @@ export class User {
   @Column({ nullable: true })
   agencyId: string; // для операторов агентства
 
-  @Column({ nullable: true })
-  psn: string; // связь с Person по PSN
+  @Column({ nullable: false, unique: true })
+  psn: string;
 
   @Column({ default: true })
   isActive: boolean;
