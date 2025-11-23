@@ -62,7 +62,7 @@ export class Document {
   changeRequestId: string;
 
   @Column()
-  uploadedBy: string; // User ID
+  psn: string; // Public Service Number
 
   @CreateDateColumn()
   uploadedAt: Date;

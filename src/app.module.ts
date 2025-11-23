@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getDatabaseConfig } from './config/database.config';
 import { PersonModule } from './modules/person/person.module';
 import { CitizenModule } from './modules/citizen/citizen.module';
+import { DocumentsModule } from './modules/documents/documents.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,6 +22,7 @@ import { CitizenModule } from './modules/citizen/citizen.module';
     AuthModule,
     PersonModule,
     CitizenModule,
+    DocumentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
