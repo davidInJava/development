@@ -6,8 +6,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getDatabaseConfig } from './config/database.config';
 import { PersonModule } from './modules/person/person.module';
-import { CitizenController } from './modules/citizen/citizen.controller';
-import { CitizenService } from './modules/citizen/citizen.service';
 import { CitizenModule } from './modules/citizen/citizen.module';
 @Module({
   imports: [
@@ -24,7 +22,7 @@ import { CitizenModule } from './modules/citizen/citizen.module';
     PersonModule,
     CitizenModule,
   ],
-  controllers: [AppController, CitizenController],
-  providers: [AppService, CitizenService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

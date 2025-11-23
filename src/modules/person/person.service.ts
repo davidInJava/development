@@ -11,6 +11,7 @@ import { Address } from '../../database/entities/address.entity';
 import { CreatePersonDto } from './dto/create-person.dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto/update-person.dto';
 import { PSNGenerator } from 'src/utils/encryption.util';
+import * as bcrypt from 'bcrypt';
 
 
 @Injectable()
@@ -58,12 +59,21 @@ export class PersonService {
       await this.addressRepository.save(primaryAddress);
     }
 
-    const person = this.personRepository.create({
-      ...createPersonDto,
+    const { password, ...rest } = createPersonDto as any;
+
+    if (!password) {
+      throw new BadRequestException('Password is required');
+    }
+
+    const person: any = this.personRepository.create({
+      ...rest,
       psn,
       dateOfBirth,
       primaryAddress,
     });
+
+    const hashed = await bcrypt.hash(password, 10);
+    person.password = hashed;
 
     return this.personRepository.save(person);
   }

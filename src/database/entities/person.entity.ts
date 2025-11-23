@@ -75,6 +75,9 @@ export class Person {
   @Column({ nullable: true })
   phone: string;
 
+  @Column({ nullable: false, select: false })
+  password: string;
+
   // Address will be in separate entity
   @OneToOne(() => Address, { eager: true, cascade: true })
   @JoinColumn()
@@ -98,5 +101,5 @@ export class Person {
   updatedAt: Date;
 
   @Column({ type: 'jsonb', nullable: true })
-  metadata: Record<string, any>; // Для дополнительной информации
+  metadata: Record<string, any>; 
 }

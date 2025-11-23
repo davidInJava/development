@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsDateString,
   IsPhoneNumber,
+  MinLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CitizenshipStatus, Gender } from 'src/database/entities';
@@ -55,6 +56,11 @@ export class CreatePersonDto {
   @IsPhoneNumber()
   @IsOptional()
   phone?: string;
+
+  @ApiProperty({ example: 'P@ssw0rd' })
+  @IsString()
+  @MinLength(6)
+  password: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
